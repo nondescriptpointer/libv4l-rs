@@ -92,7 +92,6 @@ impl<'a> StreamTrait for Stream<'a> {
     type Item = [u8];
 
     fn start(&mut self) -> io::Result<()> {
-        println!("Starting stream");
         unsafe {
             let mut typ = self.buf_type as u32;
             v4l2::ioctl(
@@ -101,7 +100,6 @@ impl<'a> StreamTrait for Stream<'a> {
                 &mut typ as *mut _ as *mut std::os::raw::c_void,
             )?;
         }
-        println!("Stream started");
 
         self.active = true;
         Ok(())
@@ -141,7 +139,6 @@ impl<'a, 'b> CaptureStream<'b> for Stream<'a> {
 
     fn dequeue(&mut self) -> io::Result<usize> {
         let mut v4l2_buf = self.buffer_desc();
-        println!("dequeue");
         unsafe {
             v4l2::ioctl(
                 self.handle.fd(),
@@ -149,7 +146,6 @@ impl<'a, 'b> CaptureStream<'b> for Stream<'a> {
                 &mut v4l2_buf as *mut _ as *mut std::os::raw::c_void,
             )?;
         }
-        println!("dequeue done");
         self.arena_index = v4l2_buf.index as usize;
 
         self.buf_meta[self.arena_index] = Metadata {
